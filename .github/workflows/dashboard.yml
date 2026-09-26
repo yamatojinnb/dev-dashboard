@@ -1,0 +1,70 @@
+name: dashboard
+
+on:
+  schedule:
+    - cron: '0 * * * *'
+  workflow_dispatch:
+    inputs:
+      notify_dry_run:
+        description: 'LINE通知をドライラン（送信せずログ出力のみ）にする'
+        type: boolean
+        default: false
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+concurrency:
+  group: pages
+  cancel-in-progress: false
+
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - name: Install python dependencies
+        run: pip install requests
+
+      - name: Collect data from GitHub API
+        env:
+          DASHBOARD_TOKEN: ${{ secrets.DASHBOARD_TOKEN }}
+        run: python scripts/collect.py
+
+      - name: Render index.html (pre-encryption)
+        run: python scripts/render.py
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Encrypt with StatiCrypt
+        env:
+          DASHBOARD_PASSWORD: ${{ secrets.DASHBOARD_PASSWORD }}
+        run: npx --yes staticrypt@4 build/plain/index.html -d build/site -p "$DASHBOARD_PASSWORD" --remember 30
+
+      - name: Remove unencrypted HTML
+        run: rm -rf build/plain
+
+      - name: Notify LINE on recent workflow failures
+        env:
+          LINE_CHANNEL_ACCESS_TOKEN: ${{ secrets.LINE_CHANNEL_ACCESS_TOKEN }}
+          LINE_ADMIN_USER_ID: ${{ secrets.LINE_ADMIN_USER_ID }}
+          NOTIFY_DRY_RUN: ${{ (github.event_name == 'workflow_dispatch' && github.event.inputs.notify_dry_run == 'true') && '1' || '' }}
+        run: python scripts/notify_line.py
+
+      - uses: actions/upload-pages-artifact@v3
+        with:
+          path: build/site
+
+      - id: deployment
+        uses: actions/deploy-pages@v4

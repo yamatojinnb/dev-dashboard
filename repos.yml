@@ -1,0 +1,24 @@
+# 監視対象リポジトリ一覧
+# 追加方法: 下記のフォーマットで1件追加するだけ（name=表示名, repo=owner/repo, description=カード説明文）
+repos:
+  - name: Sailfish bot
+    repo: yamatojinnb/line-stock-bot
+    description: LINEで株価情報を配信するBot
+  - name: 会計ノート
+    repo: yamatojinnb/boki2-shogyo-notes
+    description: 簿記2級 商業簿記の学習ノート
+  - name: Classic Concert
+    repo: yamatojinnb/classic-concert
+    description: クラシックコンサート関連プロジェクト
+  - name: JPSI
+    repo: yamatojinnb/jpsi
+    description: JPSI プロジェクト
+  - name: Sailfish Assets
+    repo: yamatojinnb/sailfish-assets-
+    description: Sailfish関連アセット管理
+  - name: Dev Dashboard
+    repo: yamatojinnb/dev-dashboard
+    description: 個人開発プロジェクト横断ダッシュボード（このリポジトリ）
+  - name: すずめとへび
+    repo: Suzume-328/suzumehebi
+    description: すずめとへび プロジェクト
