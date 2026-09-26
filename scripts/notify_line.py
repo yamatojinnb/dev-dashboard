@@ -38,8 +38,8 @@ def build_message(failures):
 
 
 def send_line_push(message):
-    token = os.environ["LINE_CHANNEL_ACCESS_TOKEN"]
-    to = os.environ["LINE_ADMIN_USER_ID"]
+    token = os.environ["LINE_CHANNEL_ACCESS_TOKEN"].strip().lstrip("\ufeff").strip()
+    to = os.environ["LINE_ADMIN_USER_ID"].strip().lstrip("\ufeff").strip()
     resp = requests.post(
         LINE_PUSH_URL,
         headers={

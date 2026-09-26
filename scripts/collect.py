@@ -9,7 +9,8 @@ from datetime import datetime, timezone
 import requests
 
 API_BASE = "https://api.github.com"
-TOKEN = os.environ["DASHBOARD_TOKEN"]
+# Windows の PowerShell からパイプで登録すると先頭に BOM(\ufeff) や改行が付くことがあるため取り除く
+TOKEN = os.environ["DASHBOARD_TOKEN"].strip().lstrip("\ufeff").strip()
 HEADERS = {
     "Authorization": f"Bearer {TOKEN}",
     "Accept": "application/vnd.github+json",
