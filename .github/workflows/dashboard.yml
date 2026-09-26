@@ -51,8 +51,12 @@ jobs:
 
       - name: Encrypt with StatiCrypt
         env:
-          DASHBOARD_PASSWORD: ${{ secrets.DASHBOARD_PASSWORD }}
-        run: npx --yes staticrypt@3 build/plain/index.html -d build/site -p "$DASHBOARD_PASSWORD" --remember 30
+          STATICRYPT_PASSWORD: ${{ secrets.DASHBOARD_PASSWORD }}
+        run: |
+          if [ -z "$STATICRYPT_PASSWORD" ]; then echo "DASHBOARD_PASSWORD が未設定です"; exit 1; fi
+          # --short: 14文字未満のパスワードでも確認プロンプトを出さずに暗号化する（CIでは入力できず出力なしで終わるため）
+          npx --yes staticrypt@3 build/plain/index.html -d build/site --short --remember 30 < /dev/null
+          test -f build/site/index.html || { echo "暗号化済みHTMLが生成されていません"; exit 1; }
 
       - name: Remove unencrypted HTML
         run: rm -rf build/plain
