@@ -19,6 +19,8 @@ repos:
   - name: Dev Dashboard
     repo: yamatojinnb/dev-dashboard
     description: 個人開発プロジェクト横断ダッシュボード（このリポジトリ）
-  - name: すずめとへび
+  - name: すずめとへび（マリモ育成）
     repo: Suzume-328/suzumehebi
-    description: すずめとへび プロジェクト
+    description: ふたりで育てるマリモのアプリ
+    supabase_url: https://ndslunrqbesiawhaukel.supabase.co
+    supabase_key_env: SUZUMEHEBI_SUPABASE_KEY

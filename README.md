@@ -70,3 +70,37 @@ scripts/notify_line.py           直近65分以内のfailureがあればLINEにp
 gh workflow run dashboard.yml -R yamatojinnb/dev-dashboard
 gh run watch -R yamatojinnb/dev-dashboard
 ```
+
+## プロダクト情報（Supabase の集計値）
+
+repos.yml に `supabase_url` と `supabase_key_env` を書いたリポジトリは、カードに「プロダクト情報」を表示する。
+キーは repos.yml に書かず、`supabase_key_env` で指定した名前の Secret に publishable key を登録する。
+
+### すずめとへび（マリモ育成）の設定
+
+1. Supabase の SQL Editor で次を1回実行する（件数と最新値だけを返す関数。写真そのものやコメントは返さない）
+
+```sql
+create or replace function public.dashboard_stats()
+returns json
+language sql
+security definer
+set search_path = public, storage
+as $$
+  select json_build_object(
+    'photos_yamato', (select count(*) from storage.objects where bucket_id = 'photos' and name like 'yamato/%' and name not like '%.emptyFolderPlaceholder'),
+    'photos_sakura', (select count(*) from storage.objects where bucket_id = 'photos' and name like 'sakura/%' and name not like '%.emptyFolderPlaceholder'),
+    'photos_trash',  (select count(*) from storage.objects where bucket_id = 'photos' and name like 'trash/%'  and name not like '%.emptyFolderPlaceholder'),
+    'marimo_size_mm',       (select size_mm from public.marimo where id = 1),
+    'marimo_water_quality', (select water_quality from public.marimo where id = 1),
+    'water_total',          (select count(*) from public.log where action = 'water'),
+    'last_water_yamato',    (select max(local_date) from public.log where action = 'water' and actor = 'yamato'),
+    'last_water_sakura',    (select max(local_date) from public.log where action = 'water' and actor = 'sakura')
+  );
+$$;
+revoke all on function public.dashboard_stats() from public;
+grant execute on function public.dashboard_stats() to anon;
+```
+
+2. dev-dashboard の Secret `SUZUMEHEBI_SUPABASE_KEY` に、Supabase の publishable key（Project Settings → API Keys）を登録する
+3. 次回の更新（毎時、または main への push）で表示される

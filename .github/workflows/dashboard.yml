@@ -40,6 +40,7 @@ jobs:
       - name: Collect data from GitHub API
         env:
           DASHBOARD_TOKEN: ${{ secrets.DASHBOARD_TOKEN }}
+          SUZUMEHEBI_SUPABASE_KEY: ${{ secrets.SUZUMEHEBI_SUPABASE_KEY }}
         run: python scripts/collect.py
 
       - name: Render index.html (pre-encryption)

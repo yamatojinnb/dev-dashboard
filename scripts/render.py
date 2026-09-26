@@ -42,6 +42,37 @@ def to_jst(iso_str):
     return dt.astimezone(JST).strftime("%Y-%m-%d %H:%M")
 
 
+PRODUCT_LABELS = [
+    ("photos_yamato", "写真（やまと）", "枚"),
+    ("photos_sakura", "写真（さくら）", "枚"),
+    ("photos_trash", "ゴミ箱の写真", "枚"),
+    ("marimo_size_mm", "マリモの大きさ", "mm"),
+    ("marimo_water_quality", "水質", ""),
+    ("water_total", "水やり累計", "回"),
+    ("last_water_yamato", "最終水やり（やまと）", ""),
+    ("last_water_sakura", "最終水やり（さくら）", ""),
+]
+
+
+def render_product_stats(stats):
+    if stats is None:
+        return ""
+    if "error" in stats:
+        body = f"<p class='muted'>{esc(stats['error'])}</p>"
+    else:
+        lis = "".join(
+            f"<li>{label}: <strong>{esc(stats[key])}</strong>{unit}</li>"
+            for key, label, unit in PRODUCT_LABELS
+            if stats.get(key) is not None
+        )
+        body = f"<ul>{lis}</ul>" if lis else "<p class='muted'>データなし</p>"
+    return f"""
+          <div class="block">
+            <h3>プロダクト情報</h3>
+            {body}
+          </div>"""
+
+
 def render_repo_card(repo):
     status = repo_status(repo)
     name = esc(repo["name"])
@@ -58,6 +89,7 @@ def render_repo_card(repo):
           </header>
           <p class="desc">{desc}</p>
           {body}
+          {render_product_stats(repo.get("product_stats"))}
         </section>"""
 
     wf_items = "".join(
@@ -115,6 +147,7 @@ def render_repo_card(repo):
             <h3>STATUS.md</h3>
             {status_html}
           </div>
+          {render_product_stats(repo.get("product_stats"))}
         </section>"""
 
 

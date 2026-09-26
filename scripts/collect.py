@@ -43,6 +43,10 @@ def parse_repos_yml(path):
             m = re.match(r"^\s*description:\s*(.*)$", line)
             if m and current is not None:
                 current["description"] = m.group(1).strip()
+                continue
+            m = re.match(r"^\s*([a-z_]+):\s*(.*)$", line)
+            if m and current is not None:
+                current[m.group(1)] = m.group(2).strip()
     if current:
         repos.append(current)
     return repos
@@ -119,6 +123,31 @@ def collect_status_md(owner, repo):
     return sections
 
 
+def collect_product_stats(entry):
+    """repos.yml に supabase_url / supabase_key_env があれば、Supabase の dashboard_stats() を呼んで集計値を取る。
+    キーは repos.yml には書かず、supabase_key_env で指定した名前の環境変数（Actions の Secret）から読む。"""
+    url = entry.get("supabase_url")
+    key_env = entry.get("supabase_key_env")
+    if not url or not key_env:
+        return None
+    key = os.environ.get(key_env, "").strip().lstrip("\ufeff").strip()
+    if not key:
+        return {"error": f"未設定（Secret {key_env} を登録すると表示されます）"}
+    try:
+        resp = requests.post(
+            f"{url.rstrip('/')}/rest/v1/rpc/dashboard_stats",
+            headers={"apikey": key, "Content-Type": "application/json"},
+            json={},
+            timeout=15,
+        )
+        if resp.status_code == 404:
+            return {"error": "dashboard_stats() が未作成です（README の手順でSQLを実行）"}
+        resp.raise_for_status()
+        return resp.json()
+    except Exception as e:
+        return {"error": f"取得失敗（{type(e).__name__}）"}
+
+
 def collect_repo(entry):
     owner, repo = entry["repo"].split("/", 1)
     result = {
@@ -137,6 +166,7 @@ def collect_repo(entry):
     except Exception as e:
         result["ok"] = False
         result["error"] = str(e)
+    result["product_stats"] = collect_product_stats(entry)
     return result
 
 
