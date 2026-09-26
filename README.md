@@ -45,7 +45,7 @@ scripts/notify_line.py           直近65分以内のfailureがあればLINEにp
 
 ## パスワード保護
 
-生成した `index.html` は [StatiCrypt](https://github.com/robinmoisson/staticrypt) v4（`npx`）で
+生成した `index.html` は [StatiCrypt](https://github.com/robinmoisson/staticrypt) v3（`npx`）で
 `secrets.DASHBOARD_PASSWORD` を使って暗号化してから公開する。「このデバイスを記憶する」は30日間有効。
 暗号化前の生HTMLはワークフロー内で削除し、成果物・ログには残さない。
 
