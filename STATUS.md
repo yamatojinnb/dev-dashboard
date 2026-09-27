@@ -1,9 +1,9 @@
 # STATUS
 ## 進行中
-- [renketsu-sim] 公式模擬試験に合わせた改修は完了。プレビュー（Artifact）と zip を更新済み。本人の確認待ち
+- [renketsu-sim] 問8型（連結CFの読み取り）を追加し、公式模擬試験の全10問の型に対応。独立掲記の基準を連結財務諸表規則38条（1%以下）に修正。プレビューと zip を更新済み
 ## 次にやること
 - [renketsu-sim] GitHub にリポジトリ renketsu-sim を作って push し、Pages を GitHub Actions で公開する（本人作業。zip の README に手順あり）。push 後は renketsu-sim 側の STATUS.md がこのカードに表示される
-- [renketsu-sim] 模擬試験の問8型（有報の文章の穴埋め、利息・配当の表示区分）を追加する
+- [renketsu-sim] 本番モード（上級レベル想定）を一度通しで解き、難易度と所要時間を確認する（本人）
 - すずめとへびのプロダクト情報を有効にする（README の SQL を Supabase で実行し、Secret SUZUMEHEBI_SUPABASE_KEY を登録）
 - 各リポジトリに STATUS.md を追加する（line-stock-bot, boki2-shogyo-notes, classic-concert, jpsi, sailfish-assets-）
 - LINE 通知をドライランで確認する（Actions → dashboard → Run workflow → notify_dry_run にチェック）
