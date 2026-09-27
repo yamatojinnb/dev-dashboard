@@ -24,3 +24,6 @@ repos:
     description: ふたりで育てるマリモのアプリ
     supabase_url: https://ndslunrqbesiawhaukel.supabase.co
     supabase_key_env: SUZUMEHEBI_SUPABASE_KEY
+  - name: 連結精算表シミュレーター
+    repo: yamatojinnb/renketsu-sim
+    description: 財務報告実務検定 連結実務演習編の学習ツール（Vite + Preact）
